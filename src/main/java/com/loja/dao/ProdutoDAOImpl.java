@@ -28,7 +28,7 @@ public class ProdutoDAOImpl implements ProdutoDAO {
             System.out.println("ERRO: Já existe um produto cadastrado com esse ID.");
 
         } catch (SQLException e) {
-            System.out.println("Erro ao cadastrar cliente. Tente novamente mais tarde.");
+            System.out.println("Erro ao cadastrar produto. Tente novamente mais tarde.");
 
         } catch (Exception e) {
             System.out.println("Ocorreu um erro inesperado.");
