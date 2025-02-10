@@ -1,9 +1,6 @@
 package com.loja.dao;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 import com.loja.Database;
 import com.loja.dao.ClienteDAO;
@@ -29,8 +26,16 @@ public class ClienteDAOImpl implements ClienteDAO {
 
             stmt.executeUpdate();
             System.out.println("Cliente " + cliente.getNome() + " cadastrado no banco de dados.");
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("ERRO: Já existe um cliente cadastrado com esse CPF.");
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao cadastrar cliente. Tente novamente mais tarde.");
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Ocorreu um erro inesperado.");
         }
     }
 }
+

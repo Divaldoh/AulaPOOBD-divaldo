@@ -23,8 +23,15 @@ public class ProdutoDAOImpl implements ProdutoDAO {
 
             stmt.executeUpdate();
             System.out.println("Produto " + produto.getNome() + " cadastrado no banco de dados.");
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("ERRO: Já existe um produto cadastrado com esse ID.");
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao cadastrar cliente. Tente novamente mais tarde.");
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Ocorreu um erro inesperado.");
         }
     }
 
