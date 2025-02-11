@@ -25,7 +25,7 @@ public class Main {
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
-            scanner.nextLine(); // Adicionado para consumir a quebra de linha pendente
+            scanner.nextLine(); // Consumir a quebra de linha
 
             switch (opcao) {
                 case 1:
@@ -40,9 +40,7 @@ public class Main {
                     String telefone = scanner.nextLine();
 
                     Cliente cliente = new Cliente(cpf, nome, endereco, telefone);
-                    clienteDAO.cadastrarCliente(cliente);
-
-
+                    clienteDAO.cadastrar(cliente);
                     break;
 
                 case 2:
@@ -53,10 +51,10 @@ public class Main {
                     double valorUnitario = scanner.nextDouble();
                     System.out.print("Quantidade em Estoque: ");
                     int quantidade = scanner.nextInt();
-                    scanner.nextLine(); // Consumir a quebra de linha
+                    scanner.nextLine();
 
                     Produto produto = new Produto(nomeProduto, quantidade, valorUnitario);
-                    produtoDAO.cadastrarProduto(produto);
+                    produtoDAO.cadastrar(produto);
                     System.out.println("Produto cadastrado com sucesso!");
                     break;
 
@@ -81,6 +79,7 @@ public class Main {
                 case 4:
                     System.out.print("Informe o CPF do Cliente: ");
                     String cpfCliente = scanner.nextLine();
+
                     System.out.print("Informe o CPF do Funcionário: ");
                     String cpfFuncionario = scanner.nextLine();
 
@@ -90,15 +89,15 @@ public class Main {
                         System.out.print("Informe o ID do produto (ou 0 para finalizar): ");
                         int idProd = scanner.nextInt();
                         scanner.nextLine(); // Consumir a quebra de linha
-                        if (idProd == 0) break;
+
+                        if (idProd == 0) break;  // Finaliza a inserção de produtos
 
                         System.out.print("Informe a quantidade desejada: ");
-                        int qtd = scanner.nextInt();
-                        scanner.nextLine(); // Consumir a quebra de linha
+                        int inputQtd = scanner.nextInt();
 
                         Produto prod = produtoDAO.buscarProduto(idProd);
-                        if (prod != null && prod.getQuantidade() >= qtd) {
-                            itens.add(new Produto(prod.getQuantidade(), prod.getId(), prod.getValorUnitario()));
+                        if (prod != null && prod.getQuantidade() >= inputQtd) {
+                            itens.add(new Produto(prod.getId(), inputQtd, prod.getValorUnitario()));
                         } else {
                             System.out.println("Produto não encontrado ou quantidade insuficiente!");
                         }
@@ -137,7 +136,7 @@ public class Main {
                 case 6:
                     System.out.println("Saindo do sistema...");
                     scanner.close();
-                    System.exit(0); // Encerra corretamente
+                    System.exit(0);
                     break;
 
                 default:
@@ -146,5 +145,3 @@ public class Main {
         }
     }
 }
-
-

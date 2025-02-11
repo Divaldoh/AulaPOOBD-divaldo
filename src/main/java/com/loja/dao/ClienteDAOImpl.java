@@ -11,7 +11,7 @@ import com.loja.models.Cliente;
 public class ClienteDAOImpl implements ClienteDAO {
 
     @Override
-    public void cadastrarCliente(Cliente cliente) throws SQLException {
+    public void cadastrar(Cliente cliente) throws SQLException {
         Connection conn = Database.getConnection();
 
 

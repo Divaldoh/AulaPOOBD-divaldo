@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class ProdutoDAOImpl implements ProdutoDAO {
 
     @Override
-    public void cadastrarProduto(Produto produto) throws SQLException {
+    public void cadastrar(Produto produto) throws SQLException {
         Connection conn = Database.getConnection();
 
         String sql = "INSERT INTO PRODUTO (NOME, VALOR_UNIT, QUANTIDADE) VALUES (?, ?, ?)";
@@ -63,25 +63,51 @@ public class ProdutoDAOImpl implements ProdutoDAO {
     @Override
     public void efetuarVenda(VendaDTO vendaDTO) throws SQLException {
         Connection conn = Database.getConnection();
-
+        String sqlVerificaCliente = "SELECT COUNT(*) FROM CLIENTE WHERE CPF = ?";
+        String sqlVerificaFuncionario = "SELECT COUNT(*) FROM FUNCIONARIO WHERE CPF = ?";
         String sqlPedido = "INSERT INTO PEDIDO (CPF_CLIENTE_FK, CPF_FUNCIONARIO_FK, VALOR_TOTAL) VALUES (?, ?, ?)";
         String sqlItemPedido = "INSERT INTO ITEM_PEDIDO (ID_PEDIDO_FK, ID_PRODUTO_FK, QUANTIDADE, VALOR) VALUES (?, ?, ?, ?)";
         String sqlUpdateEstoque = "UPDATE PRODUTO SET QUANTIDADE = QUANTIDADE - ? WHERE ID = ?";
 
         try {
-             PreparedStatement stmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement stmtItem = conn.prepareStatement(sqlItemPedido);
-             PreparedStatement stmtEstoque = conn.prepareStatement(sqlUpdateEstoque);
+            conn.setAutoCommit(false); // Inicia a transação
 
+            // Verifica se o cliente existe
+            PreparedStatement stmtVerificaCliente = conn.prepareStatement(sqlVerificaCliente);
+            stmtVerificaCliente.setString(1, vendaDTO.getCpfCliente());
+            ResultSet rsCliente = stmtVerificaCliente.executeQuery();
+            rsCliente.next();
+            if (rsCliente.getInt(1) == 0) {
+                System.out.println("Erro: Cliente não encontrado.");
+                return;
+            }
+
+            // Verifica se o funcionário existe
+            PreparedStatement stmtVerificaFuncionario = conn.prepareStatement(sqlVerificaFuncionario);
+            stmtVerificaFuncionario.setString(1, vendaDTO.getCpfFuncionario());
+            ResultSet rsFuncionario = stmtVerificaFuncionario.executeQuery();
+            rsFuncionario.next();
+            if (rsFuncionario.getInt(1) == 0) {
+                System.out.println("Erro: Funcionário não encontrado.");
+                return;
+            }
+
+            // Prepara a inserção do pedido
+            PreparedStatement stmtPedido = conn.prepareStatement(sqlPedido, Statement.RETURN_GENERATED_KEYS);
             double valorTotal = vendaDTO.getItens().stream().mapToDouble(item -> item.getValorUnitario() * item.getQuantidade()).sum();
             stmtPedido.setString(1, vendaDTO.getCpfCliente());
             stmtPedido.setString(2, vendaDTO.getCpfFuncionario());
             stmtPedido.setDouble(3, valorTotal);
             stmtPedido.executeUpdate();
 
+            // Obtém o ID do pedido gerado
             ResultSet rs = stmtPedido.getGeneratedKeys();
             if (rs.next()) {
                 int pedidoId = rs.getInt(1);
+
+                // Insere os itens do pedido
+                PreparedStatement stmtItem = conn.prepareStatement(sqlItemPedido);
+                PreparedStatement stmtEstoque = conn.prepareStatement(sqlUpdateEstoque);
                 for (Produto item : vendaDTO.getItens()) {
                     stmtItem.setInt(1, pedidoId);
                     stmtItem.setInt(2, item.getId());
@@ -93,11 +119,27 @@ public class ProdutoDAOImpl implements ProdutoDAO {
                     stmtEstoque.setInt(2, item.getId());
                     stmtEstoque.executeUpdate();
                 }
+
                 System.out.println("Venda registrada com sucesso! Pedido ID: " + pedidoId);
             }
+
+            conn.commit(); // Confirma a transação
         } catch (Exception e) {
+            try {
+                conn.rollback(); // Desfaz qualquer alteração em caso de erro
+                System.out.println("Erro ao registrar a venda. A transação foi desfeita.");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
+        } finally {
+            try {
+                conn.setAutoCommit(true); // Restaura o comportamento padrão
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
+
     }
 
         @Override
