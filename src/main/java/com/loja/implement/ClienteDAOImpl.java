@@ -4,8 +4,6 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import com.loja.Database;
-
-
 import com.loja.dao.ClienteDAO;
 import com.loja.domain.Cliente;
 

@@ -1,14 +1,12 @@
 package com.loja.implement;
 
 import com.loja.Database;
-import com.loja.implement.ClienteDAOImpl;
 import com.loja.domain.Cliente;
 import com.loja.domain.Funcionario;
 import com.loja.dao.PedidoDAO;
 import com.loja.domain.Pedido;
 import com.loja.domain.Produto;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 

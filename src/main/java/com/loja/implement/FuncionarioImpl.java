@@ -2,7 +2,6 @@ package com.loja.implement;
 
 import com.loja.Database;
 import com.loja.dao.FuncionarioDAO;
-import com.loja.domain.Cliente;
 import com.loja.domain.Funcionario;
 
 import java.sql.*;

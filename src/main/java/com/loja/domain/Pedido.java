@@ -1,10 +1,6 @@
 package com.loja.domain;
 
-import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.ArrayList;
-
-import com.loja.domain.Produto;
 
 
 public class Pedido {
