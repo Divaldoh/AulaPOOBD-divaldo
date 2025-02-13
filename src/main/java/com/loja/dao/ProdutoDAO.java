@@ -1,14 +1,11 @@
 package com.loja.dao;
 
-import com.loja.DTO.VendaDTO;
-import com.loja.models.Produto;
+import com.loja.domain.Cliente;
+import com.loja.domain.Produto;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface ProdutoDAO extends DAO<Produto> {
-    Produto buscarProduto(int id) throws SQLException;
-    public void efetuarVenda(VendaDTO vendaDTO) throws SQLException;
-    ArrayList<VendaDTO> buscarVenda() throws SQLException;
-
+    public Produto buscarProduto(int ID) throws SQLException;
 }

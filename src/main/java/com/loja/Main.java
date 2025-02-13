@@ -1,8 +1,7 @@
 package com.loja;
 
-import com.loja.DTO.VendaDTO;
-import com.loja.dao.*;
-import com.loja.models.*;
+import com.loja.domain.*;
+import com.loja.implement.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,6 +12,8 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         ClienteDAOImpl clienteDAO = new ClienteDAOImpl();
         ProdutoDAOImpl produtoDAO = new ProdutoDAOImpl();
+        PedidoDAOImpl pedidoDAO = new PedidoDAOImpl();
+        FuncionarioImpl funcionarioDAO = new FuncionarioImpl();
 
         while (true) {
             System.out.println("\n===== Menu =====");
@@ -40,7 +41,7 @@ public class Main {
                     String telefone = scanner.nextLine();
 
                     Cliente cliente = new Cliente(cpf, nome, endereco, telefone);
-                    clienteDAO.cadastrar(cliente);
+                    clienteDAO.salvar(cliente);
                     break;
 
                 case 2:
@@ -54,7 +55,7 @@ public class Main {
                     scanner.nextLine();
 
                     Produto produto = new Produto(nomeProduto, quantidade, valorUnitario);
-                    produtoDAO.cadastrar(produto);
+                    produtoDAO.salvar(produto);
                     System.out.println("Produto cadastrado com sucesso!");
                     break;
 
@@ -79,16 +80,19 @@ public class Main {
                 case 4:
                     System.out.print("Informe o CPF do Cliente: ");
                     String cpfCliente = scanner.nextLine();
+                    cliente = clienteDAO.buscar(cpfCliente);
+
 
                     System.out.print("Informe o CPF do Funcionário: ");
                     String cpfFuncionario = scanner.nextLine();
+                    Funcionario funcionario = funcionarioDAO.buscarFuncionario(cpfFuncionario);
 
                     ArrayList<Produto> itens = new ArrayList<>();
 
                     while (true) {
                         System.out.print("Informe o ID do produto (ou 0 para finalizar): ");
                         int idProd = scanner.nextInt();
-                        scanner.nextLine(); // Consumir a quebra de linha
+                        scanner.nextLine();
 
                         if (idProd == 0) break;  // Finaliza a inserção de produtos
 
@@ -104,8 +108,8 @@ public class Main {
                     }
 
                     if (!itens.isEmpty()) {
-                        VendaDTO vendaDTO = new VendaDTO(cpfCliente, cpfFuncionario, itens);
-                        produtoDAO.efetuarVenda(vendaDTO);
+                        Pedido pedido = new Pedido(cliente, funcionario, itens);
+                        pedidoDAO.salvar(pedido);
                         System.out.println("Venda realizada com sucesso!");
                     } else {
                         System.out.println("Nenhum item foi adicionado à venda.");
@@ -114,21 +118,26 @@ public class Main {
 
                 case 5:
                     System.out.println("Listando todas as vendas...");
-                    ArrayList<VendaDTO> vendas = produtoDAO.buscarVenda();
+                    ArrayList<Pedido> vendas = pedidoDAO.buscarTodos();
 
                     if (vendas.isEmpty()) {
                         System.out.println("Nenhuma venda encontrada.");
                     } else {
-                        for (VendaDTO venda : vendas) {
+                        for (Pedido venda : vendas) {
                             System.out.println("\n-------------------------------------------------");
-                            System.out.println("Cliente CPF: " + venda.getCpfCliente());
-                            System.out.println("Funcionário CPF: " + venda.getCpfFuncionario());
+                            System.out.println("Cliente CPF: " + venda.getCliente().getNome());
+                            System.out.println("Funcionário CPF: " + venda.getFuncionario().getNome());
                             System.out.println("Itens Comprados:");
+
                             for (Produto produtos : venda.getItens()) {
                                 System.out.println("   - " + produtos.getNome() +
                                         " | Quantidade: " + produtos.getQuantidade() +
                                         " | Valor: R$ " + produtos.getValorUnitario());
                             }
+
+                            double valorTotal = venda.getItens().stream().mapToDouble(item -> item.getValorUnitario() * item.getQuantidade()).sum();
+
+                            System.out.println("Valor Total: R$ " + valorTotal);
                         }
                     }
                     break;

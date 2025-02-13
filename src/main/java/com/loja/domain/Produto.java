@@ -1,4 +1,4 @@
-package com.loja.models;
+package com.loja.domain;
 
 public class Produto {
     private int ID;
@@ -31,20 +31,35 @@ public class Produto {
     }
 
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public int getQuantidade() {
-        return quantidade;
+        return this.quantidade;
     }
 
     public double getValorUnitario() {
-        return valorUnitario;
+        return this.valorUnitario;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public void setValorUnitario(double valorUnitario) {
+        this.valorUnitario = valorUnitario;
     }
 
     @Override
     public String toString() {
         return "Produto{" + "ID=" + ID + ", Nome='" + nome + "', Quantidade=" + quantidade + ", Preço=" + valorUnitario + "}";
     }
-
 }
