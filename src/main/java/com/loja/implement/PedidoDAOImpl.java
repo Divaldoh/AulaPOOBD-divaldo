@@ -166,6 +166,7 @@ public class PedidoDAOImpl implements PedidoDAO {
         return vendas;
     }
 
+    //Não está sem conteúdo porque eu esqueci, está sem conteúdo porque não era necessário para o sistema, mas em um futuro próximo sim
     @Override
     public Pedido buscarPedido(int ID) throws SQLException {
         return null;
